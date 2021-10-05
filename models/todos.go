@@ -1,15 +1,21 @@
 package models
 import (
-	"gorm.io/gorm"
-	// "time"
+	// "gorm.io/gorm"
+	"time"
 )
 
+type OwnModel struct {
+    ID        uint       `gorm:"primary_key"`
+    CreatedAt time.Time  `json:"-"`
+    UpdatedAt time.Time  `json:"-"`
+    DeletedAt *time.Time `json:"-";sql:"index"`
+}
+
 type Todo struct {
-	gorm.Model
-	ID int `gorm:"default:uuid_generate_v3()"`
+	OwnModel
 	Title string `json: "title"`
 	Description string `json: "description"`
-	// DueDate time.Time `json:"due_date"`
+	DueDate time.Time `json:"due_date"`
 	Category string `json:"category"`
 }
 
@@ -19,6 +25,5 @@ type Result struct {
 	Data    interface{} `json:"data"`
 	Message string      `json:"message"`
 }
-
 
 

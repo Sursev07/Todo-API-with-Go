@@ -6,6 +6,7 @@ import (
 	"todo-API-with-go/models"
 	"net/http"
 	"encoding/json"
+	"io/ioutil"
 
 	// "gorm.io/gorm"
 	// "gorm.io/driver/mysql"
@@ -28,7 +29,7 @@ func GetTodos(w http.ResponseWriter, r *http.Request)  {
 
 func WelcomeAPI(w http.ResponseWriter, r *http.Request)  {
 	w.Header().Set("Content-Type", "application/json")
-	result := "Hello"
+	result := "Hello Welcome to Todo Management API"
 	json.NewEncoder(w).Encode(result)
 	
 }
@@ -40,19 +41,28 @@ func GetTodo(w http.ResponseWriter, r *http.Request)  {
 	var todo models.Todo
 	DB := database.GetDB()
 	DB.First(&todo, params["id"])
-	json.NewEncoder(w).Encode(todo)
+	res := models.Result{Code: 200, Data: todo, Message: "Success Get Todo"}
+	result, err := json.Marshal(res)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(result)
 	
 }
 
 func CreateTodo(w http.ResponseWriter, r *http.Request)  {
-	w.Header().Set("Content-Type", "application/json")
+	payloads, _ := ioutil.ReadAll(r.Body)
+
 	var todo models.Todo
-	fmt.Print(r.Body, ":>>>>>")
-	json.NewDecoder(r.Body).Decode(&todo)
+	json.Unmarshal(payloads, &todo)
 	DB := database.GetDB()
 	DB.Create(&todo)
-	json.NewEncoder(w).Encode(todo)
-	res := models.Result{Code: 200, Data: todo, Message: "Success create todo"}
+
+	res := models.Result{Code: 200, Data: todo, Message: "Todo has been created"}
 	result, err := json.Marshal(res)
 
 	if err != nil {
@@ -66,14 +76,30 @@ func CreateTodo(w http.ResponseWriter, r *http.Request)  {
 }
 
 func UpdateTodo(w http.ResponseWriter, r *http.Request)  {
-	w.Header().Set("Content-Type", "application/json")
-	params := mux.Vars(r)
+	fmt.Print("Masukkkk")
+	vars := mux.Vars(r)
+	todoID := vars["id"]
+
+	payloads, _ := ioutil.ReadAll(r.Body)
+
+	var todoEdit models.Todo
+	json.Unmarshal(payloads, &todoEdit)
+
 	var todo models.Todo
 	DB := database.GetDB()
-	DB.First(&todo, params["id"])
-	json.NewDecoder(r.Body).Decode(&todo)
-	DB.Save(&todo)
-	json.NewEncoder(w).Encode(todo)
+	DB.First(&todo, todoID)
+	DB.Model(&todo).Updates(todoEdit)
+
+	res := models.Result{Code: 200, Data: todo, Message: "Todo has been updated"}
+	result, err := json.Marshal(res)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(result)
 	
 }
 
@@ -84,6 +110,15 @@ func DeleteTodo(w http.ResponseWriter, r *http.Request)  {
 	var todo models.Todo
 	DB := database.GetDB()
 	DB.Delete(&todo, params["id"])
-	json.NewEncoder(w).Encode("The USer is Deleted Successfully!")
+	res := models.Result{Code: 200,  Message: "Todo has been deleted"}
+	result, err := json.Marshal(res)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(result)
 	
 }
