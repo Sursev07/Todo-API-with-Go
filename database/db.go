@@ -33,6 +33,7 @@ func InitDB() {
 
 func InitialMigration() {
 	DB.AutoMigrate(&models.Todo{})
+	DB.AutoMigrate(&models.User{})
 }
 
 func GetDB() *gorm.DB {

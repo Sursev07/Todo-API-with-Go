@@ -16,6 +16,9 @@ func HandleRequest()  {
 	r := mux.NewRouter()
 
 
+	r.HandleFunc("/api/v1/register", controllers.UserRegister).Methods("POST")
+	r.HandleFunc("/api/v1/login", controllers.UserLogin).Methods("POST")
+	
 	r.HandleFunc("/api/v1", controllers.WelcomeAPI).Methods("GET")
 	r.HandleFunc("/api/v1/todos", controllers.GetTodos).Methods("GET")
 	r.HandleFunc("/api/v1/todos/{id}", controllers.GetTodo).Methods("GET")

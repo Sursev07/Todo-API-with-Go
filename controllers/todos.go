@@ -2,7 +2,7 @@ package controllers
 
 
 import (
-	 "fmt"
+	"fmt"
 	"todo-API-with-go/models"
 	"net/http"
 	"encoding/json"
@@ -57,15 +57,17 @@ func GetTodo(w http.ResponseWriter, r *http.Request)  {
 	params := mux.Vars(r)
 	var todo models.Todo
 	DB := database.GetDB()
-	DB.First(&todo, params["id"])
+	data := DB.First(&todo, params["id"])
 	res := models.Result{Code: 200, Data: todo, Message: "Success Get Todo"}
 	result, err := json.Marshal(res)
 
+	fmt.Println("masukk", data)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
+	
 	w.WriteHeader(http.StatusOK)
 	w.Write(result)
 	
@@ -127,16 +129,17 @@ func UpdateTodo(w http.ResponseWriter, r *http.Request)  {
 	DB.First(&todo, todoID)
 	DB.Model(&todo).Updates(todoEdit)
 
-	res := models.Result{Code: 200, Data: todo, Message: "Todo has been updated"}
-	result, err := json.Marshal(res)
+	// res := models.Result{Code: 200, Data: todo, Message: "Todo has been updated"}
+	// result, err := json.Marshal(res)
 
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-	}
+	// if err != nil {
+	// 	http.Error(w, err.Error(), http.StatusInternalServerError)
+	// }
 
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write(result)
+	// w.WriteHeader(http.StatusOK)
+	// w.Write(result)
+	json.NewEncoder(w).Encode(todo)
 	
 }
 
@@ -164,7 +167,6 @@ func DeleteTodo(w http.ResponseWriter, r *http.Request)  {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 
-	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	w.Write(result)
 	

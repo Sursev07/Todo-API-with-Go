@@ -15,13 +15,14 @@ type Todo struct {
 	OwnModel
 	Title string `json: "title"`
 	Description string `json: "description"`
-	DueDate time.Time `json:"due_date"`
+	DueDate string `json:"due_date"`
 	Category string `json:"category"`
+	AuthorId uint
 }
 
 // Result is an array of product
 type Result struct {
-	Code    int         `json:"code"`
+	Code    uint         `json:"code"`
 	Data    interface{} `json:"data"`
 	Message string      `json:"message"`
 }
