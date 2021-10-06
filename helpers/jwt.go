@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/dgrijalva/jwt-go"
-	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 var secretKey = "rahasia"
@@ -24,9 +24,9 @@ func GenerateToken(id uint, email string) string {
 	return signedToken
 }
 
-func VerifyToken(c *gin.Context) (interface{}, error) {
+func VerifyToken( r *http.Request) (interface{}, error) {
 	errReponse := errors.New("sign in to proceed")
-	headerToken := c.Request.Header.Get("Authorization")
+	headerToken := r.Header.Get("Authorization")
 	bearer := strings.HasPrefix(headerToken, "Bearer")
 	if !bearer {
 		return nil, errReponse

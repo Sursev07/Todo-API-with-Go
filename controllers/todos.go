@@ -81,7 +81,7 @@ func GetTodo(w http.ResponseWriter, r *http.Request)  {
 // @Accept  json
 // @Produce  json
 // @Param todo body Todo true "Todo has been created"
-// @Success 200 {object} models.Todo
+// @Success 201 {object} models.Todo
 // @Router /todos [post]
 func CreateTodo(w http.ResponseWriter, r *http.Request)  {
 	payloads, _ := ioutil.ReadAll(r.Body)
@@ -91,7 +91,7 @@ func CreateTodo(w http.ResponseWriter, r *http.Request)  {
 	DB := database.GetDB()
 	DB.Create(&todo)
 
-	res := models.Result{Code: 200, Data: todo, Message: "Todo has been created"}
+	res := models.Result{Code: 201, Data: todo, Message: "Todo has been created"}
 	result, err := json.Marshal(res)
 
 	if err != nil {
@@ -129,17 +129,16 @@ func UpdateTodo(w http.ResponseWriter, r *http.Request)  {
 	DB.First(&todo, todoID)
 	DB.Model(&todo).Updates(todoEdit)
 
-	// res := models.Result{Code: 200, Data: todo, Message: "Todo has been updated"}
-	// result, err := json.Marshal(res)
+	 res := models.Result{Code: 200, Data: todo, Message: "Todo has been updated"}
+	 result, err := json.Marshal(res)
 
-	// if err != nil {
-	// 	http.Error(w, err.Error(), http.StatusInternalServerError)
-	// }
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
 
 	w.Header().Set("Content-Type", "application/json")
-	// w.WriteHeader(http.StatusOK)
-	// w.Write(result)
-	json.NewEncoder(w).Encode(todo)
+	w.WriteHeader(http.StatusOK)
+	w.Write(result)
 	
 }
 
@@ -169,5 +168,4 @@ func DeleteTodo(w http.ResponseWriter, r *http.Request)  {
 
 	w.WriteHeader(http.StatusOK)
 	w.Write(result)
-	
 }

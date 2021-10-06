@@ -4,21 +4,27 @@ import (
 	"net/http"
 
 	"github.com/dgrijalva/jwt-go"
-	"github.com/gin-gonic/gin"
+	"todo-API-with-go/models"
+	"encoding/json"
+	// "github.com/gorilla/context"
 )
 
-func AdminAuthorization() gin.HandlerFunc {
-	return func(c *gin.Context) {
+func UserAuthorization(nextHandler http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		userData := c.MustGet("userData").(jwt.MapClaims)
-		userRole := userData["role"].(string)
 
-		if userRole != "admin" {
-			c.AbortWithStatusJSON(http.StatusNotFound, gin.H{
-				"error":   "Unauthorized",
-				"message": "you are not authorized to access this data",
-			})
+		if userData != "admin" {
+			res := models.ResultErr{Code: 401, Error: "Unauthorized", Message: "you are not authorized to access this data"}
+			result, err := json.Marshal(res)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+			w.WriteHeader(http.StatusUnauthorized)
+			w.Write(result)
+			return
 			return
 		}
-		c.Next()
-	}
+		nextHandler.ServeHTTP(w, r)
+	})
 }

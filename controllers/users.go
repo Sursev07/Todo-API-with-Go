@@ -11,6 +11,16 @@ import (
 	"todo-API-with-go/database"
 )
 
+
+// UserRegister godoc
+// @Summary Register an user
+// @Description Register an user with the input paylod
+// @Tags users
+// @Accept  json
+// @Produce  json
+// @Param user body User true "User successfully registered"
+// @Success 201 {object} models.User
+// @Router /register [post]
 func UserRegister(w http.ResponseWriter, r *http.Request)  {
 	payloads, _ := ioutil.ReadAll(r.Body)
 
@@ -19,7 +29,7 @@ func UserRegister(w http.ResponseWriter, r *http.Request)  {
 	DB := database.GetDB()
 	DB.Create(&user)
 
-	res := models.Result{Code: 200, Data: user, Message: "Todo has been created"}
+	res := models.Result{Code: 201, Data: user, Message: "Todo has been created"}
 	result, err := json.Marshal(res)
 
 	if err != nil {
@@ -31,6 +41,16 @@ func UserRegister(w http.ResponseWriter, r *http.Request)  {
 	w.Write(result)
 }
 
+
+// UserLogin godoc
+// @Summary Login an user
+// @Description Login an user with the input paylod
+// @Tags users
+// @Accept  json
+// @Produce  json
+// @Param user body User true "User successfully login"
+// @Success 200 {object} models.User
+// @Router /login [post]
 func UserLogin(w http.ResponseWriter, r *http.Request)  {
 	w.Header().Set("Content-Type", "application/json")
 	payloads, _ := ioutil.ReadAll(r.Body)
@@ -54,10 +74,6 @@ func UserLogin(w http.ResponseWriter, r *http.Request)  {
 		}
 		w.WriteHeader(http.StatusUnauthorized)
 		w.Write(result)
-		// c.JSON(http.StatusUnauthorized, gin.H{
-		// 	"error":   "Unauthorized",
-		// 	"message": "invalid email/password",
-		// })
 		return
 	}
 
@@ -76,11 +92,6 @@ func UserLogin(w http.ResponseWriter, r *http.Request)  {
 	}
 
 	token := helpers.GenerateToken(user.ID, user.Email)
-
-	// c.JSON(http.StatusOK, gin.H{
-	// 	"token": token,
-	// })
-
 	res := models.Result{Code: 200, Data: token, Message: "Successfully login"}
 	result, err := json.Marshal(res)
 

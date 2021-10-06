@@ -2,6 +2,8 @@ basePath: /api/v1
 definitions:
   models.Todo:
     properties:
+      authorId:
+        type: integer
       category:
         type: string
       description:
@@ -12,6 +14,21 @@ definitions:
         type: integer
       title:
         type: string
+    type: object
+  models.User:
+    properties:
+      email:
+        type: string
+      full_name:
+        type: string
+      id:
+        type: integer
+      password:
+        type: string
+      todos:
+        items:
+          $ref: '#/definitions/models.Todo'
+        type: array
     type: object
 host: localhost:8080
 info:
@@ -27,6 +44,52 @@ info:
   title: Todo Management API
   version: "1.0"
 paths:
+  /login:
+    post:
+      consumes:
+      - application/json
+      description: Login an user with the input paylod
+      parameters:
+      - description: User successfully login
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/User'
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+      summary: Login an user
+      tags:
+      - users
+  /register:
+    post:
+      consumes:
+      - application/json
+      description: Register an user with the input paylod
+      parameters:
+      - description: User successfully registered
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/User'
+          type: object
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.User'
+      summary: Register an user
+      tags:
+      - users
   /todos:
     get:
       consumes:
@@ -59,8 +122,8 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
-          description: OK
+        "201":
+          description: Created
           schema:
             $ref: '#/definitions/models.Todo'
       summary: Create a new todo
