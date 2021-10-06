@@ -18,6 +18,14 @@ import (
 var err error
 
 
+// GetTodos godoc
+// @Summary Get details of all todos
+// @Description Get details of all todos
+// @Tags todos
+// @Accept  json
+// @Produce  json
+// @Success 200 {array} models.Todo
+// @Router /todos [get]
 func GetTodos(w http.ResponseWriter, r *http.Request)  {
 	w.Header().Set("Content-Type", "application/json")
 	var todos []models.Todo
@@ -35,6 +43,15 @@ func WelcomeAPI(w http.ResponseWriter, r *http.Request)  {
 }
 
 
+// GetTodo godoc
+// @Summary Get details of todo
+// @Description Get details of todo
+// @Tags todo
+// @Accept  json
+// @Produce  json
+// @Param id path int true "Todo ID"
+// @Success 200 {array} models.Todo
+// @Router /todos/{id}  [get]
 func GetTodo(w http.ResponseWriter, r *http.Request)  {
 	w.Header().Set("Content-Type", "application/json")
 	params := mux.Vars(r)
@@ -54,6 +71,16 @@ func GetTodo(w http.ResponseWriter, r *http.Request)  {
 	
 }
 
+
+// CreateTodo godoc
+// @Summary Create a new todo
+// @Description Create a new todo with the input paylod
+// @Tags todos
+// @Accept  json
+// @Produce  json
+// @Param todo body Todo true "Todo has been created"
+// @Success 200 {object} models.Todo
+// @Router /todos [post]
 func CreateTodo(w http.ResponseWriter, r *http.Request)  {
 	payloads, _ := ioutil.ReadAll(r.Body)
 
@@ -75,6 +102,16 @@ func CreateTodo(w http.ResponseWriter, r *http.Request)  {
 	
 }
 
+// UpdateTodo godoc
+// @Summary Update a todo
+// @Description Update a todo with the input paylod
+// @Tags todos
+// @Accept  json
+// @Produce  json
+// @Param todo body Todo true "Todo has been created"
+// @Param id path int true "Todo ID"
+// @Success 200 {object} models.Todo
+// @Router /todos/{id} [put]
 func UpdateTodo(w http.ResponseWriter, r *http.Request)  {
 	fmt.Print("Masukkkk")
 	vars := mux.Vars(r)
@@ -103,6 +140,16 @@ func UpdateTodo(w http.ResponseWriter, r *http.Request)  {
 	
 }
 
+
+// DeleteTodo godoc
+// @Summary Delete a todo
+// @Description Delete a todo with the input paylod
+// @Tags todos
+// @Accept  json
+// @Produce  json
+// @Param id path int true "Todo ID"
+// @Success 200
+// @Router /todos/{id}[delete]
 func DeleteTodo(w http.ResponseWriter, r *http.Request)  {
 	w.Header().Set("Content-Type", "application/json")
 
@@ -110,7 +157,7 @@ func DeleteTodo(w http.ResponseWriter, r *http.Request)  {
 	var todo models.Todo
 	DB := database.GetDB()
 	DB.Delete(&todo, params["id"])
-	res := models.Result{Code: 200,  Message: "Todo has been deleted"}
+	res := models.Result{Code: 200, Message: "Todo has been deleted"}
 	result, err := json.Marshal(res)
 
 	if err != nil {
