@@ -7,9 +7,9 @@ import (
 	"net/http"
 	"encoding/json"
 	"io/ioutil"
-
-	// "gorm.io/gorm"
-	// "gorm.io/driver/mysql"
+	//  "strconv"
+	"github.com/dgrijalva/jwt-go"
+	"github.com/gorilla/context"
 	"github.com/gorilla/mux"
 	"todo-API-with-go/database"
 )
@@ -83,12 +83,17 @@ func GetTodo(w http.ResponseWriter, r *http.Request)  {
 // @Param todo body Todo true "Todo has been created"
 // @Success 201 {object} models.Todo
 // @Router /todos [post]
-func CreateTodo(w http.ResponseWriter, r *http.Request)  {
+func CreateTodo(w http.ResponseWriter, r *http.Request) {
 	payloads, _ := ioutil.ReadAll(r.Body)
 
 	var todo models.Todo
 	json.Unmarshal(payloads, &todo)
 	DB := database.GetDB()
+	UserData := context.Get(r, "userData").(jwt.MapClaims)
+	userID := uint(UserData["id"].(float64))
+    
+	fmt.Println(userID, "USERIDDD")
+	todo.AuthorId = userID
 	DB.Create(&todo)
 
 	res := models.Result{Code: 201, Data: todo, Message: "Todo has been created"}

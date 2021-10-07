@@ -15,19 +15,22 @@ import (
 
 func HandleRequest()  {
 	r := mux.NewRouter()
-
-
+	
+	r.HandleFunc("/api/v1", (controllers.WelcomeAPI)).Methods("GET")
 	r.HandleFunc("/api/v1/register", controllers.UserRegister).Methods("POST")
 	r.HandleFunc("/api/v1/login", controllers.UserLogin).Methods("POST")
 	
-	r.Use(middlewares.Authentication)
-	r.HandleFunc("/api/v1", (controllers.WelcomeAPI)).Methods("GET")
-	r.HandleFunc("/api/v1/todos", controllers.GetTodos).Methods("GET")
-	r.HandleFunc("/api/v1/todos/{id}", controllers.GetTodo).Methods("GET")
-	r.HandleFunc("/api/v1/todos", controllers.CreateTodo).Methods("POST")
-	r.Use(middlewares.UserAuthorization)
-	r.HandleFunc("/api/v1/todos/{id}", controllers.UpdateTodo).Methods("PUT")
-	r.HandleFunc("/api/v1/todos/{id}", controllers.DeleteTodo).Methods("DELETE")
+	
+	todoRouter := r.PathPrefix("/api/v1").Subrouter()
+	todoRouter.Use(middlewares.Authentication)
+	todoRouter.HandleFunc("/todos", controllers.CreateTodo).Methods("POST")
+	todoRouter.HandleFunc("/todos", controllers.GetTodos).Methods("GET")
+	todoRouter.HandleFunc("/todos/{id}", controllers.GetTodo).Methods("GET")
+	// r.Use(middlewares.UserAuthorization)
+	todoRouter2 := r.PathPrefix("/api/v1").Subrouter()
+	todoRouter2.Use(middlewares.Authentication, middlewares.UserAuthorization)
+	todoRouter2.HandleFunc("/todos/{id}", controllers.UpdateTodo).Methods("PUT")
+	todoRouter2.HandleFunc("/todos/{id}", controllers.DeleteTodo).Methods("DELETE")
 
 	fmt.Println("Server is starting at 8080")
 
