@@ -164,7 +164,7 @@ func DeleteTodo(w http.ResponseWriter, r *http.Request)  {
 	var todo models.Todo
 	DB := database.GetDB()
 	DB.Delete(&todo, params["id"])
-	res := models.Result{Code: 200, Message: "Todo has been deleted"}
+	res := models.ResultSuccess{Code: 200, Message: "Todo has been deleted"}
 	result, err := json.Marshal(res)
 
 	if err != nil {
