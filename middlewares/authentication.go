@@ -27,7 +27,7 @@ func Authentication(nextHandler http.Handler)  http.Handler {
 			return
 		}
 		
-		context.Set(r, "token", verifyToken)
+		context.Set(r, "userData", verifyToken)
         nextHandler.ServeHTTP(w, r)
 	})
 }

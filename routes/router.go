@@ -25,6 +25,7 @@ func HandleRequest()  {
 	r.HandleFunc("/api/v1/todos", controllers.GetTodos).Methods("GET")
 	r.HandleFunc("/api/v1/todos/{id}", controllers.GetTodo).Methods("GET")
 	r.HandleFunc("/api/v1/todos", controllers.CreateTodo).Methods("POST")
+	r.Use(middlewares.UserAuthorization)
 	r.HandleFunc("/api/v1/todos/{id}", controllers.UpdateTodo).Methods("PUT")
 	r.HandleFunc("/api/v1/todos/{id}", controllers.DeleteTodo).Methods("DELETE")
 
